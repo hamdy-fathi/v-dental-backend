@@ -1,0 +1,71 @@
+server {
+    listen 80;
+    server_name creativo-api.creativospaces.com;
+
+    location / {
+        proxy_pass http://82.112.240.180:3002;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /public/uploads/ {
+        root /var/www/creativo/backend;
+        autoindex off;
+        try_files $uri $uri/ =404;
+    }
+}
+
+server {
+    server_name system.creativospaces.com;
+
+    location / {
+    root /var/www/creativo/admin;
+    index index.html index.htm;
+    try_files $uri $uri/ /index.html;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+    }
+
+}
+
+
+server {
+    server_name creativospaces.com www.creativospaces.com;
+    root /var/www/creativo-web;
+    
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    # Security: Block access to sensitive files
+    location ~ /\.env$ {
+        deny all;
+        return 403;
+    }
+    
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+
+    # Disable logging for favicon.ico
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+}
+
