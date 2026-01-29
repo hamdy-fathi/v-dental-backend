@@ -71,6 +71,10 @@ const ENV = process.env.NODE_ENV;
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "uploads"),
       serveRoot: "/uploads",
+      serveStaticOptions: {
+        index: false,
+        fallthrough: true,
+      },
     }),
     CacheModule.register({
       ttl: 5000,
@@ -86,6 +90,10 @@ const ENV = process.env.NODE_ENV;
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "public"),
       serveRoot: "/public",
+      serveStaticOptions: {
+        index: false,
+        fallthrough: true,
+      },
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
