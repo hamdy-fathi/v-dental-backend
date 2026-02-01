@@ -40,7 +40,7 @@ export class UploadsController {
         }
       },
       storage: diskStorage({
-        destination: "./dist/uploads",
+        destination: process.env.UPLOADS_PATH || "/var/www/v-dental-backend/uploads",
         filename: (req, file, cb) => {
           const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);

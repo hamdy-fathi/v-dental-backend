@@ -70,12 +70,19 @@ const ENV = process.env.NODE_ENV;
     UnifiedDataModule,
     AuthModule,
     BeforeAfterModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, "..", "uploads"),
-      serveRoot: "/uploads",
-      serveStaticOptions: {
-        index: false,
-        fallthrough: true,
+    ServeStaticModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const uploadsPath = configService.get<string>("appConfig.uploadsPath") || "/var/www/v-dental-backend/uploads";
+        return {
+          rootPath: uploadsPath,
+          serveRoot: "/uploads",
+          serveStaticOptions: {
+            index: false,
+            fallthrough: true,
+          },
+        } as any;
       },
     }),
     CacheModule.register({
