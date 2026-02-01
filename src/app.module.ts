@@ -9,6 +9,7 @@ import { join } from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
+import { BeforeAfterModule } from "./before-after/before-after.module";
 import jwtConfig from "./auth/config/jwt.config";
 import { AccessTokenGuard } from "./auth/guards/access-token/access-token.guard";
 import { AuthenticationGuard } from "./auth/guards/authentication/authentication.guard";
@@ -68,6 +69,7 @@ const ENV = process.env.NODE_ENV;
     SubCategoryModule,
     UnifiedDataModule,
     AuthModule,
+    BeforeAfterModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "uploads"),
       serveRoot: "/uploads",
