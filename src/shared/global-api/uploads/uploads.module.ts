@@ -1,5 +1,4 @@
 import { Global, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MulterModule } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import * as fs from "fs";
@@ -11,32 +10,25 @@ import { UploadsService } from "./uploads.service";
 @Global()
 @Module({
   imports: [
-    ConfigModule,
-    MulterModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const uploadsPath = configService.get<string>("appConfig.uploadsPath") || "/var/www/v-dental-backend/uploads";
-        
-        // Ensure uploads directory exists
-        if (!fs.existsSync(uploadsPath)) {
-          fs.mkdirSync(uploadsPath, { recursive: true });
-        }
-
-        return {
-          storage: diskStorage({
-            destination: (req, file, cb) => {
-              cb(null, uploadsPath);
-            },
-            filename: (req, file, cb) => {
-              const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-              const ext = path.extname(file.originalname);
-              const filename = `${uniqueSuffix}${ext}`;
-              cb(null, filename);
-            },
-          }),
-        };
-      },
+    MulterModule.register({
+      storage: diskStorage({
+        destination: (req, file, cb) => {
+          const uploadsPath = process.env.UPLOADS_PATH || "/var/www/v-dental-backend/uploads";
+          
+          // Ensure uploads directory exists
+          if (!fs.existsSync(uploadsPath)) {
+            fs.mkdirSync(uploadsPath, { recursive: true });
+          }
+          
+          cb(null, uploadsPath);
+        },
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+          const ext = path.extname(file.originalname);
+          const filename = `${uniqueSuffix}${ext}`;
+          cb(null, filename);
+        },
+      }),
     }),
   ],
   controllers: [UploadsController, SimpleUploadController],

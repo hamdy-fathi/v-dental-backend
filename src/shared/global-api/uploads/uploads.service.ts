@@ -1,12 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import * as fs from "fs";
 import * as path from "path";
 import * as sharp from "sharp";
 
 @Injectable()
 export class UploadsService {
-  constructor(private readonly configService: ConfigService) {}
   async handleFilesUpload(files: Array<Express.Multer.File>) {
     const processedFiles = [];
 
@@ -35,7 +33,7 @@ export class UploadsService {
 
   private async compressImage(file: Express.Multer.File): Promise<Express.Multer.File> {
     // Use the same path where the file was uploaded (from MulterModule config)
-    const uploadPath = this.configService.get<string>("appConfig.uploadsPath") || "/var/www/v-dental-backend/uploads";
+    const uploadPath = process.env.UPLOADS_PATH || "/var/www/v-dental-backend/uploads";
     const originalPath = path.join(uploadPath, file.filename);
     const targetSize = 150 * 1024; // 150KB
 
